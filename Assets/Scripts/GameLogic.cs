@@ -32,7 +32,15 @@ public sealed class GameLogic : MonoBehaviour {
         Defeat,
     }
     private State _state;
-    public State state => _state;
+    public State state {
+        get => _state;
+        set {
+            _state = value;
+            _stateSetTime = Time.timeSinceLevelLoad;
+        }
+    }
+    private float _stateSetTime;
+    public float StateSetTime => _stateSetTime;
 
 
     private int _tick;
@@ -42,7 +50,7 @@ public sealed class GameLogic : MonoBehaviour {
 
 
     public void SetState(State state) {
-        _state = state;
+        this.state = state;
         _tick = 0;
         _controller.SetTarget(null);
         switch (_state) {

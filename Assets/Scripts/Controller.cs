@@ -9,26 +9,39 @@ public sealed class Controller : MonoBehaviour {
     private float _force;
 
 
+    private Vector2 _resultForce;
+
+
     public void SetTarget(Rigidbody2D target) {
         _target = target;
+        _resultForce = Vector2.zero;
     }
 
     private void Update() {
+        _resultForce = Vector2.zero;
         if (_target == null) {
             return;
         }
 
         if (Input.GetKey(KeyCode.UpArrow)) {
-            _target.AddForce(new Vector2(0f, _force * 2f));
+            _resultForce += new Vector2(0f, _force * 2f);
         }
         if (Input.GetKey(KeyCode.DownArrow)) {
-            _target.AddForce(new Vector2(0f, -_force));
+            _resultForce += new Vector2(0f, -_force);
         }
         if (Input.GetKey(KeyCode.LeftArrow)) {
-            _target.AddForce(new Vector2(-_force, 0f));
+            _resultForce += new Vector2(-_force, 0f);
         }
         if (Input.GetKey(KeyCode.RightArrow)) {
-            _target.AddForce(new Vector2(_force, 0f));
+            _resultForce += new Vector2(_force, 0f);
         }
+    }
+
+    private void FixedUpdate() {
+        if (_target == null) {
+            return;
+        }
+        
+        _target.AddForce(_resultForce * Time.fixedDeltaTime);
     }
 }

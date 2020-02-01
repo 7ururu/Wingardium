@@ -45,6 +45,7 @@ public sealed class BrokenItem : MonoBehaviour {
         Active,
         Replay,
         Preview,
+        OnPlace,
     }
     private State _state;
 
@@ -117,6 +118,14 @@ public sealed class BrokenItem : MonoBehaviour {
                 _previewAnimationRoot.transform.rotation = transform.rotation;
                 _previewAnimationRoot.SetActive(true);
                 _previewAnimationTimer = 0f;
+                break;
+
+            case State.OnPlace:
+                gameObject.SetActive(true);
+                goalEmission.enabled = false;
+                transform.position = _goal.position;
+                transform.rotation = _goal.rotation;
+                _rb.isKinematic = true;
                 break;
         }
     }

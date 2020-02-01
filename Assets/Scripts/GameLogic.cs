@@ -48,7 +48,8 @@ public sealed class GameLogic : MonoBehaviour {
         switch (_state) {
             case State.Waiting:
                 for (int i = 0; i < _items.Length; i++) {
-                    _items[i].SetState(i == _currentItem ? BrokenItem.State.Preview : BrokenItem.State.Disabled);
+                    _items[i].SetState(i == _currentItem ? BrokenItem.State.Preview : 
+                                       i < _currentItem ? BrokenItem.State.OnPlace : BrokenItem.State.Disabled);
                 }
                 _gameCamera.Target = null;
                 break;

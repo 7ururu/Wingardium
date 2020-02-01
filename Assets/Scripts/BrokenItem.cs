@@ -20,6 +20,19 @@ public sealed class BrokenItem : MonoBehaviour {
     private float _goalSmoothRotationMaxSpeed;
 
 
+    [SerializeField]
+    private GameObject _previewAnimationRoot;
+
+    [SerializeField]
+    private SpriteRenderer _previewAnimationRenderer;
+
+    [SerializeField]
+    private float _previewAnimationInterval = 1.5f;
+
+    [SerializeField]
+    private float _previewAnimationDuration = 1f;
+
+
     private bool _isGoalAchieved;
     public bool IsGoalAchieved => _isGoalAchieved;
 
@@ -48,10 +61,10 @@ public sealed class BrokenItem : MonoBehaviour {
 
     private ParticleSystem _goalParticlesInstance;
 
-
     private Vector3 _goalSmoothPositionVelocity;
     private float _goalSmoothRotationVelocity;
-    
+
+    private float _previewAnimationTimer;
 
 
     public void SetState(State state) {
@@ -62,6 +75,8 @@ public sealed class BrokenItem : MonoBehaviour {
 
         _goalSmoothPositionVelocity = Vector3.zero;
         _goalSmoothRotationVelocity = 0f;
+
+        _previewAnimationRoot.SetActive(false);
 
         var goalEmission = _goalParticlesInstance.emission;
 
@@ -97,6 +112,11 @@ public sealed class BrokenItem : MonoBehaviour {
                 goalEmission.enabled = true;
                 ResetTransform();
                 _rb.isKinematic = true;
+
+                _previewAnimationRoot.transform.position = transform.position;
+                _previewAnimationRoot.transform.rotation = transform.rotation;
+                _previewAnimationRoot.SetActive(true);
+                _previewAnimationTimer = 0f;
                 break;
         }
     }
@@ -120,12 +140,30 @@ public sealed class BrokenItem : MonoBehaviour {
     }
 
     private void Update() {
-        if (_state == State.Active && _isGoalAchieved) {
-            transform.position = Vector3.SmoothDamp(transform.position, _goal.position, ref _goalSmoothPositionVelocity,
-                                                    _goalSmoothTime, _goalSmoothPositionMaxSpeed, Time.deltaTime);
-            transform.eulerAngles = new Vector3(0f, 0f,
-                Mathf.SmoothDampAngle(transform.eulerAngles.z, _goal.eulerAngles.z, ref _goalSmoothRotationVelocity,
-                                      _goalSmoothTime, _goalSmoothRotationMaxSpeed, Time.deltaTime));
+        switch (_state) {
+            case State.Active:
+                if (_isGoalAchieved) {
+                    transform.position = Vector3.SmoothDamp(transform.position, _goal.position, ref _goalSmoothPositionVelocity,
+                                                            _goalSmoothTime, _goalSmoothPositionMaxSpeed, Time.deltaTime);
+                    transform.eulerAngles = new Vector3(0f, 0f,
+                        Mathf.SmoothDampAngle(transform.eulerAngles.z, _goal.eulerAngles.z, ref _goalSmoothRotationVelocity,
+                                              _goalSmoothTime, _goalSmoothRotationMaxSpeed, Time.deltaTime));
+                }
+                break;
+            case State.Preview:
+                _previewAnimationTimer += Time.deltaTime;
+                if (_previewAnimationTimer > _previewAnimationInterval) {
+                    _previewAnimationTimer = 0f;
+                }
+                var t = Mathf.Pow(Mathf.Clamp01(_previewAnimationTimer / _previewAnimationDuration), 2f);
+
+                _previewAnimationRoot.transform.position = Vector3.Lerp(_startPosition, _goal.position, t);
+                _previewAnimationRoot.transform.rotation = Quaternion.Lerp(_startRotation, _goal.rotation, t);
+
+                var color = _previewAnimationRenderer.color;
+                color.a = 1f - t;
+                _previewAnimationRenderer.color = color;
+                break;
         }
     }
 
@@ -141,6 +179,10 @@ public sealed class BrokenItem : MonoBehaviour {
 
         var emission = _goalParticlesInstance.emission;
         emission.enabled = false;
+
+        _previewAnimationRenderer.sprite = GetComponent<SpriteRenderer>().sprite;
+        _previewAnimationRoot.transform.SetParent(null, true);
+        _previewAnimationRoot.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {

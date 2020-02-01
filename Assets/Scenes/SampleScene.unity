@@ -579,11 +579,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0197e1611f945d648a9702fc2aa6ffaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _overviewSize: 5
+  _overviewSize: 5.397174
   _followSize: 2.5
   _smoothTime: 0.1
   _positionSmoothMaxSpeed: 20
   _sizeSmoothMaxSpeed: 20
+  _bounds: {x: 5.15, y: 2.8}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -611,7 +612,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.397174
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

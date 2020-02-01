@@ -17,6 +17,9 @@ public sealed class GameCamera : MonoBehaviour {
     [SerializeField]
     private float _sizeSmoothMaxSpeed = 2f;
 
+    [SerializeField]
+    private Vector2 _bounds;
+
 
     private Transform _target;
     public Transform Target {
@@ -50,10 +53,17 @@ public sealed class GameCamera : MonoBehaviour {
             targetPosition = new Vector2(Target.position.x, Target.position.y);
         }
 
+        targetPosition.x = Mathf.Clamp(targetPosition.x, -_bounds.x, _bounds.x);
+        targetPosition.y = Mathf.Clamp(targetPosition.y, -_bounds.y, _bounds.y);
+
         var position = new Vector2(transform.position.x, transform.position.y);
         position = Vector2.SmoothDamp(position, targetPosition, ref _positionSmoothVelocity, _smoothTime, _positionSmoothMaxSpeed, Time.deltaTime);
         transform.position = new Vector3(position.x, position.y, transform.position.z);
 
         _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, targetSize, ref _sizeSmoothVelocity, _smoothTime, _sizeSmoothMaxSpeed, Time.deltaTime);
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.DrawCube(Vector3.zero, new Vector3(_bounds.x, _bounds.y, 1f));
     }
 }

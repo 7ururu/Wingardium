@@ -9,8 +9,22 @@ public sealed class BrokenItem : MonoBehaviour {
     [SerializeField]
     private ParticleSystem _goalParticlesPrefab;
 
+
+    [SerializeField]
+    private float _goalSmoothTime;
+
+    [SerializeField]
+    private float _goalSmoothPositionMaxSpeed;
+
+    [SerializeField]
+    private float _goalSmoothRotationMaxSpeed;
+
+
     private bool _isGoalAchieved;
     public bool IsGoalAchieved => _isGoalAchieved;
+
+    private float _goalAchieveTime;
+    public float GoalAchieveTime => _goalAchieveTime;
 
     public enum State {
 
@@ -35,11 +49,19 @@ public sealed class BrokenItem : MonoBehaviour {
     private ParticleSystem _goalParticlesInstance;
 
 
+    private Vector3 _goalSmoothPositionVelocity;
+    private float _goalSmoothRotationVelocity;
+    
+
+
     public void SetState(State state) {
         _state = state;
 
         _rb.velocity = Vector2.zero;
         _rb.angularVelocity = 0f;
+
+        _goalSmoothPositionVelocity = Vector3.zero;
+        _goalSmoothRotationVelocity = 0f;
 
         var goalEmission = _goalParticlesInstance.emission;
 
@@ -97,9 +119,14 @@ public sealed class BrokenItem : MonoBehaviour {
         }
     }
 
-    public void SetToGoalPosition() {
-        transform.position = _goal.position;
-        transform.rotation = _goal.rotation;
+    private void Update() {
+        if (_state == State.Active && _isGoalAchieved) {
+            transform.position = Vector3.SmoothDamp(transform.position, _goal.position, ref _goalSmoothPositionVelocity,
+                                                    _goalSmoothTime, _goalSmoothPositionMaxSpeed, Time.deltaTime);
+            transform.eulerAngles = new Vector3(0f, 0f,
+                Mathf.SmoothDampAngle(transform.eulerAngles.z, _goal.eulerAngles.z, ref _goalSmoothRotationVelocity,
+                                      _goalSmoothTime, _goalSmoothRotationMaxSpeed, Time.deltaTime));
+        }
     }
 
     private void Awake() {
@@ -119,6 +146,11 @@ public sealed class BrokenItem : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collider) {
         if (collider.transform == _goal) {
             _isGoalAchieved = true;
+            _goalAchieveTime = Time.timeSinceLevelLoad;
+
+            _rb.isKinematic = true;
+            _rb.velocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
         }
     }
 

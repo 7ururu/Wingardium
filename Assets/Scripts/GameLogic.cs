@@ -19,6 +19,9 @@ public sealed class GameLogic : MonoBehaviour {
     [SerializeField]
     private int _gameTime = 75;
 
+    [SerializeField]
+    private float _itemSwitchDelay;
+
 
 
     public enum State {
@@ -91,10 +94,7 @@ public sealed class GameLogic : MonoBehaviour {
                 _gameTimer += Time.deltaTime;
                 if (_gameTimer >= _gameTime) {
                     SetState(State.Defeat);
-                } else if (_items[_currentItem].IsGoalAchieved) {
-                    _items[_currentItem].SetToGoalPosition();
-                    _items[_currentItem].OnFixedUpdate(_tick);
-
+                } else if (_items[_currentItem].IsGoalAchieved && _items[_currentItem].GoalAchieveTime + _itemSwitchDelay < Time.timeSinceLevelLoad) {
                     _currentItem++;
                     if (_currentItem == _items.Length) {
                         SetState(State.Victory);

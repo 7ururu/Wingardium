@@ -146,3 +146,6 @@ MonoBehaviour:
   _goal: {fileID: 0}
   _goalParticlesPrefab: {fileID: 8580027442624777366, guid: 6709a41aea38dbe4a822c3e4b9376b5a,
     type: 3}
+  _goalSmoothTime: 0.2
+  _goalSmoothPositionMaxSpeed: 10
+  _goalSmoothRotationMaxSpeed: 360

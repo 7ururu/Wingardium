@@ -14,6 +14,7 @@ public sealed class BrokenItem : MonoBehaviour {
         Disabled,
         Active,
         Replay,
+        Preview,
     }
     private State _state;
 
@@ -40,6 +41,7 @@ public sealed class BrokenItem : MonoBehaviour {
                 gameObject.SetActive(false);
                 _goal.SetActive(false);
                 break;
+
             case State.Active:
                 _isGoalAchieved = false;
 
@@ -53,12 +55,19 @@ public sealed class BrokenItem : MonoBehaviour {
                 _velocities.Clear();
                 _angularVelocities.Clear();
                 break;
+
             case State.Replay:
                 gameObject.SetActive(true);
                 _goal.SetActive(false);
                 ResetTransform();
                 _rb.isKinematic = true;
+                break;
 
+            case State.Preview:
+                gameObject.SetActive(true);
+                _goal.SetActive(true);
+                ResetTransform();
+                _rb.isKinematic = true;
                 break;
         }
     }
@@ -79,6 +88,11 @@ public sealed class BrokenItem : MonoBehaviour {
                 _rb.angularVelocity = _angularVelocities[index];
                 break;
         }
+    }
+
+    public void SetToGoalPosition() {
+        transform.position = _goal.transform.position;
+        transform.rotation = _goal.transform.rotation;
     }
 
     private void Awake() {

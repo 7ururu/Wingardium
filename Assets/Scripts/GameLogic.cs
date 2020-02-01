@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public sealed class GameLogic : MonoBehaviour {
+
+    private static GameLogic _instance;
+    public static GameLogic Instance => _instance;
+
 
     [SerializeField]
     private BrokenItem[] _items;
@@ -8,27 +13,89 @@ public sealed class GameLogic : MonoBehaviour {
     [SerializeField]
     private Controller _controller;
 
+    [SerializeField]
+    private int _gameTime = 75;
+
+
+    public enum State {
+
+        Waiting,
+        Playing,
+        Victory,
+        Defeat,
+    }
+    private State _state;
+    public State state => _state;
+
 
     private int _tick;
     private int _currentItem;
+    private float _gameTimer;
+    public int LeftTime => Mathf.Max(0, _gameTime - (int)_gameTimer);
 
+
+    public void SetState(State state) {
+        _state = state;
+        _tick = 0;
+        _controller.SetTarget(null);
+        switch (_state) {
+            case State.Waiting:
+                for (int i = 0; i < _items.Length; i++) {
+                    _items[i].SetState(i == _currentItem ? BrokenItem.State.Preview : BrokenItem.State.Disabled);
+                }
+                break;
+            case State.Playing:
+                for (int i = 0; i < _items.Length; i++) {
+                    _items[i].SetState(i == _currentItem ? BrokenItem.State.Active :
+                                       i < _currentItem ? BrokenItem.State.Replay : BrokenItem.State.Disabled);
+                }
+                _controller.SetTarget(_items[_currentItem].RB);
+                break;
+            case State.Victory:
+                for (int i = 0; i < _items.Length; i++) {
+                    _items[i].SetState(BrokenItem.State.Replay);
+                }
+                break;
+            case State.Defeat:
+                for (int i = 0; i < _items.Length; i++) {
+                    _items[i].SetState(BrokenItem.State.Disabled);
+                }
+                break;
+        }
+    }
+
+    public void RestartGame() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+
+    private void Awake() {
+        _instance = this;
+    }
 
     private void Start() {
-        SetupBrokenItem();
+        SetState(State.Waiting);
     }
 
     private void Update() {
-        if (_items[_currentItem].IsGoalAchieved) {
-            _currentItem++;
-            if (_currentItem == _items.Length) {
-                Debug.Log("Victory!");
-                _currentItem = 0;
-            }
+        switch (_state) {
+            case State.Playing:
+                _gameTimer += Time.deltaTime;
+                if (_gameTimer >= _gameTime) {
+                    SetState(State.Defeat);
+                } else if (_items[_currentItem].IsGoalAchieved) {
+                    _items[_currentItem].SetToGoalPosition();
+                    _items[_currentItem].OnFixedUpdate(_tick);
 
-            _tick = 0;
-
-            SetupBrokenItem();
-        }
+                    _currentItem++;
+                    if (_currentItem == _items.Length) {
+                        SetState(State.Victory);
+                    } else {
+                        SetState(State.Waiting);
+                    }
+                }
+                break;
+        }        
     }
 
     private void FixedUpdate() {
@@ -36,13 +103,5 @@ public sealed class GameLogic : MonoBehaviour {
             _items[i].OnFixedUpdate(_tick);
         }
         _tick++;
-    }
-
-    private void SetupBrokenItem() {
-        for (int i = 0; i < _items.Length; i++) {
-            _items[i].SetState(i == _currentItem ? BrokenItem.State.Active :
-                               i < _currentItem ? BrokenItem.State.Replay : BrokenItem.State.Disabled);
-        }
-        _controller.SetTarget(_items[_currentItem].RB);
     }
 }

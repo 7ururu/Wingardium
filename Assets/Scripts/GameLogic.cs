@@ -9,6 +9,7 @@ public sealed class GameLogic : MonoBehaviour {
     private Controller _controller;
 
 
+    private int _tick;
     private int _currentItem;
 
 
@@ -23,14 +24,25 @@ public sealed class GameLogic : MonoBehaviour {
                 Debug.Log("Victory!");
                 _currentItem = 0;
             }
+
+            _tick = 0;
+
             SetupBrokenItem();
         }
     }
 
+    private void FixedUpdate() {
+        for (int i = 0; i < _items.Length; i++) {
+            _items[i].OnFixedUpdate(_tick);
+        }
+        _tick++;
+    }
+
     private void SetupBrokenItem() {
         for (int i = 0; i < _items.Length; i++) {
-            _items[i].gameObject.SetActive(i == _currentItem);
+            _items[i].SetState(i == _currentItem ? BrokenItem.State.Active :
+                               i < _currentItem ? BrokenItem.State.Replay : BrokenItem.State.Disabled);
         }
-        _controller.SetTarget(_items[_currentItem].GetComponent<Rigidbody2D>());
+        _controller.SetTarget(_items[_currentItem].RB);
     }
 }

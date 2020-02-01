@@ -53,7 +53,7 @@ public sealed class UIManager : MonoBehaviour {
         switch (GameLogic.Instance.state) {
             case GameLogic.State.Waiting:
                 _waitingRoot.SetActive(true);
-                if (Input.GetKeyUp(KeyCode.Space)) {
+                if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return)) {
                     _startButton.OnPointerClick(new PointerEventData(_eventSystem));
                 }
                 break;

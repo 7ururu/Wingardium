@@ -14,7 +14,11 @@ public sealed class GameLogic : MonoBehaviour {
     private Controller _controller;
 
     [SerializeField]
+    private GameCamera _gameCamera;
+
+    [SerializeField]
     private int _gameTime = 75;
+
 
 
     public enum State {
@@ -43,6 +47,7 @@ public sealed class GameLogic : MonoBehaviour {
                 for (int i = 0; i < _items.Length; i++) {
                     _items[i].SetState(i == _currentItem ? BrokenItem.State.Preview : BrokenItem.State.Disabled);
                 }
+                _gameCamera.Target = null;
                 break;
             case State.Playing:
                 for (int i = 0; i < _items.Length; i++) {
@@ -50,16 +55,19 @@ public sealed class GameLogic : MonoBehaviour {
                                        i < _currentItem ? BrokenItem.State.Replay : BrokenItem.State.Disabled);
                 }
                 _controller.SetTarget(_items[_currentItem].RB);
+                _gameCamera.Target = _items[_currentItem].transform;
                 break;
             case State.Victory:
                 for (int i = 0; i < _items.Length; i++) {
                     _items[i].SetState(BrokenItem.State.Replay);
                 }
+                _gameCamera.Target = null;
                 break;
             case State.Defeat:
                 for (int i = 0; i < _items.Length; i++) {
                     _items[i].SetState(BrokenItem.State.Disabled);
                 }
+                _gameCamera.Target = null;
                 break;
         }
     }

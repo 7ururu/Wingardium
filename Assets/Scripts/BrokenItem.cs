@@ -4,7 +4,10 @@ using UnityEngine;
 public sealed class BrokenItem : MonoBehaviour {
 
     [SerializeField]
-    private GameObject _goal;
+    private Transform _goal;
+
+    [SerializeField]
+    private ParticleSystem _goalParticlesPrefab;
 
     private bool _isGoalAchieved;
     public bool IsGoalAchieved => _isGoalAchieved;
@@ -29,6 +32,8 @@ public sealed class BrokenItem : MonoBehaviour {
     private List<Vector2> _velocities = new List<Vector2>();
     private List<float> _angularVelocities = new List<float>();
 
+    private ParticleSystem _goalParticlesInstance;
+
 
     public void SetState(State state) {
         _state = state;
@@ -36,17 +41,19 @@ public sealed class BrokenItem : MonoBehaviour {
         _rb.velocity = Vector2.zero;
         _rb.angularVelocity = 0f;
 
+        var goalEmission = _goalParticlesInstance.emission;
+
         switch (_state) {
             case State.Disabled:
                 gameObject.SetActive(false);
-                _goal.SetActive(false);
+                goalEmission.enabled = false;
                 break;
 
             case State.Active:
                 _isGoalAchieved = false;
 
                 gameObject.SetActive(true);
-                _goal.SetActive(true);
+                goalEmission.enabled = true;
                 ResetTransform();
                 _rb.isKinematic = false;
 
@@ -58,14 +65,14 @@ public sealed class BrokenItem : MonoBehaviour {
 
             case State.Replay:
                 gameObject.SetActive(true);
-                _goal.SetActive(false);
+                goalEmission.enabled = false;
                 ResetTransform();
                 _rb.isKinematic = true;
                 break;
 
             case State.Preview:
                 gameObject.SetActive(true);
-                _goal.SetActive(true);
+                goalEmission.enabled = true;
                 ResetTransform();
                 _rb.isKinematic = true;
                 break;
@@ -91,8 +98,8 @@ public sealed class BrokenItem : MonoBehaviour {
     }
 
     public void SetToGoalPosition() {
-        transform.position = _goal.transform.position;
-        transform.rotation = _goal.transform.rotation;
+        transform.position = _goal.position;
+        transform.rotation = _goal.rotation;
     }
 
     private void Awake() {
@@ -100,10 +107,17 @@ public sealed class BrokenItem : MonoBehaviour {
         _startRotation = transform.rotation;
 
         _rb = GetComponent<Rigidbody2D>();
+
+
+        _goalParticlesInstance = Instantiate(_goalParticlesPrefab);
+        _goalParticlesInstance.transform.localPosition = _goal.position;
+
+        var emission = _goalParticlesInstance.emission;
+        emission.enabled = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {
-        if (collider.gameObject == _goal) {
+        if (collider.transform == _goal) {
             _isGoalAchieved = true;
         }
     }

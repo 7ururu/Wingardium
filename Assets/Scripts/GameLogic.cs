@@ -88,6 +88,15 @@ public sealed class GameLogic : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public bool IsReplayFinished() {
+        for (int i = 0; i < _items.Length; i++) {
+            if (!_items[i].IsReplayFinished(_tick)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     private void Awake() {
         _instance = this;

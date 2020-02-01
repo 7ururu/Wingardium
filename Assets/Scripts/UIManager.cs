@@ -60,9 +60,11 @@ public sealed class UIManager : MonoBehaviour {
                 _playingRoot.SetActive(true);
                 break;
             case GameLogic.State.Victory:
-                _victoryRoot.SetActive(true);
-                if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return)) {
-                    _victoryRestartButton.OnPointerClick(new PointerEventData(_eventSystem));
+                if (GameLogic.Instance.IsReplayFinished()) {
+                    _victoryRoot.SetActive(true);
+                    if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return)) {
+                        _victoryRestartButton.OnPointerClick(new PointerEventData(_eventSystem));
+                    }
                 }
                 break;
             case GameLogic.State.Defeat:

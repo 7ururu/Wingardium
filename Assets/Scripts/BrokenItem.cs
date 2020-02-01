@@ -148,6 +148,10 @@ public sealed class BrokenItem : MonoBehaviour {
         }
     }
 
+    public bool IsReplayFinished(int tick) {
+        return _positions.Count < tick;
+    }
+
     private void Update() {
         switch (_state) {
             case State.Active:

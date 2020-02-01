@@ -18,9 +18,6 @@ public sealed class UIManager : MonoBehaviour {
     [SerializeField]
     private GameObject _playingRoot;
 
-    [SerializeField]
-    private Text _timerText;
-
 
     [SerializeField]
     private GameObject _victoryRoot;
@@ -36,6 +33,13 @@ public sealed class UIManager : MonoBehaviour {
     private Button _defeatRestartButton;
 
 
+    [SerializeField]
+    private GameObject _timerRoot;
+
+    [SerializeField]
+    private Text _timerText;
+
+
     private void Start() {
         _victoryRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
         _defeatRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
@@ -46,10 +50,12 @@ public sealed class UIManager : MonoBehaviour {
         _playingRoot.SetActive(false);
         _victoryRoot.SetActive(false);
         _defeatRoot.SetActive(false);
+        _timerRoot.SetActive(false);
 
         switch (GameLogic.Instance.state) {
             case GameLogic.State.Waiting:
                 _waitingRoot.SetActive(true);
+                _timerRoot.SetActive(true);
                 var isButtonPressed = Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                                       Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow);
                 if (isButtonPressed && GameLogic.Instance.StateSetTime + _waitingDelay < Time.timeSinceLevelLoad) {
@@ -58,6 +64,7 @@ public sealed class UIManager : MonoBehaviour {
                 break;
             case GameLogic.State.Playing:
                 _playingRoot.SetActive(true);
+                _timerRoot.SetActive(true);
                 break;
             case GameLogic.State.Victory:
                 if (GameLogic.Instance.IsReplayFinished()) {

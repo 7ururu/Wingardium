@@ -33,6 +33,10 @@ public sealed class BrokenItem : MonoBehaviour {
     private float _previewAnimationDuration = 1f;
 
 
+    [SerializeField]
+    private GameObject _enableOnActivationObject;
+
+
     private bool _isGoalAchieved;
     public bool IsGoalAchieved => _isGoalAchieved;
 
@@ -81,6 +85,10 @@ public sealed class BrokenItem : MonoBehaviour {
 
         var goalEmission = _goalParticlesInstance.emission;
 
+        if (_enableOnActivationObject != null) {
+            _enableOnActivationObject.SetActive(false);
+        }
+
         switch (_state) {
             case State.Disabled:
                 gameObject.SetActive(true);
@@ -128,6 +136,10 @@ public sealed class BrokenItem : MonoBehaviour {
                 transform.position = _goal.position;
                 transform.rotation = _goal.rotation;
                 _rb.isKinematic = true;
+
+                if (_enableOnActivationObject != null) {
+                    _enableOnActivationObject.SetActive(true);
+                }
                 break;
         }
     }
@@ -146,6 +158,12 @@ public sealed class BrokenItem : MonoBehaviour {
                 _rb.MoveRotation(_rotations[index]);
                 _rb.velocity = _velocities[index];
                 _rb.angularVelocity = _angularVelocities[index];
+
+                if (IsReplayFinished(tick)) {
+                    if (_enableOnActivationObject != null) {
+                        _enableOnActivationObject.SetActive(true);
+                    }
+                }
                 break;
         }
     }

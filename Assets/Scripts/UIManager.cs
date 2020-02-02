@@ -67,7 +67,7 @@ public sealed class UIManager : MonoBehaviour {
                 _timerRoot.SetActive(true);
                 break;
             case GameLogic.State.Victory:
-                if (GameLogic.Instance.IsReplayFinished()) {
+                if (GameLogic.Instance.IsVictoryAnimationFinished || GameLogic.Instance.IsReplayFinished()) {
                     _victoryRoot.SetActive(true);
                     if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return)) {
                         _victoryRestartButton.OnPointerClick(new PointerEventData(_eventSystem));

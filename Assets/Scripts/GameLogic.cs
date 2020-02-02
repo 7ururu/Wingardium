@@ -22,6 +22,9 @@ public sealed class GameLogic : MonoBehaviour {
     [SerializeField]
     private float _itemSwitchDelay;
 
+    [SerializeField]
+    private float _victoryAnimationReplayInterval = 2.5f;
+
 
 
     public enum State {
@@ -49,10 +52,16 @@ public sealed class GameLogic : MonoBehaviour {
     public int LeftTime => Mathf.Max(0, _gameTime - (int)_gameTimer);
 
 
+    private bool _isVictoryAnimationFinished;
+    public bool IsVictoryAnimationFinished => _isVictoryAnimationFinished;
+    private float _victoryAnimationRestartDelay;
+
+
     public void SetState(State state) {
         this.state = state;
         _tick = 0;
         _controller.SetTarget(null);
+        _isVictoryAnimationFinished = false;
         switch (_state) {
             case State.Waiting:
                 for (int i = 0; i < _items.Length; i++) {
@@ -118,6 +127,19 @@ public sealed class GameLogic : MonoBehaviour {
                         SetState(State.Victory);
                     } else {
                         SetState(State.Waiting);
+                    }
+                }
+                break;
+            case State.Victory:
+                if (IsReplayFinished()) {
+                    _isVictoryAnimationFinished = true;
+                    if (_victoryAnimationRestartDelay <= 0f) {
+                        _victoryAnimationRestartDelay = _victoryAnimationReplayInterval;
+                    }
+                    _victoryAnimationRestartDelay -= Time.deltaTime;
+                    if (_victoryAnimationRestartDelay <= 0f) {
+                        SetState(State.Victory);
+                        _isVictoryAnimationFinished = true;
                     }
                 }
                 break;

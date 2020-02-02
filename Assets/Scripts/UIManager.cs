@@ -9,14 +9,7 @@ public sealed class UIManager : MonoBehaviour {
 
 
     [SerializeField]
-    private GameObject _waitingRoot;
-
-    [SerializeField]
     private float _waitingDelay = 0.5f;
-
-
-    [SerializeField]
-    private GameObject _playingRoot;
 
 
     [SerializeField]
@@ -40,31 +33,38 @@ public sealed class UIManager : MonoBehaviour {
     private Text _timerText;
 
 
+    [SerializeField]
+    private CanvasGroup _hintsGroup;
+
+    [SerializeField]
+    private float _hintsFadeSpeed = 10f;
+
+
     private void Start() {
         _victoryRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
         _defeatRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
     }
 
     private void Update() {
-        _waitingRoot.SetActive(false);
-        _playingRoot.SetActive(false);
         _victoryRoot.SetActive(false);
         _defeatRoot.SetActive(false);
         _timerRoot.SetActive(false);
 
         switch (GameLogic.Instance.state) {
             case GameLogic.State.Waiting:
-                _waitingRoot.SetActive(true);
                 _timerRoot.SetActive(true);
                 var isButtonPressed = Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                                       Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow);
                 if (isButtonPressed && GameLogic.Instance.StateSetTime + _waitingDelay < Time.timeSinceLevelLoad) {
                     GameLogic.Instance.SetState(GameLogic.State.Playing);
                 }
+
+                _hintsGroup.alpha += _hintsFadeSpeed * Time.deltaTime;
                 break;
             case GameLogic.State.Playing:
-                _playingRoot.SetActive(true);
                 _timerRoot.SetActive(true);
+
+                _hintsGroup.alpha -= _hintsFadeSpeed * Time.deltaTime;
                 break;
             case GameLogic.State.Victory:
                 //if (GameLogic.Instance.IsVictoryAnimationFinished || GameLogic.Instance.IsReplayFinished()) {
@@ -73,12 +73,16 @@ public sealed class UIManager : MonoBehaviour {
                         _victoryRestartButton.OnPointerClick(new PointerEventData(_eventSystem));
                     }
                 //}
+
+                _hintsGroup.alpha -= _hintsFadeSpeed * Time.deltaTime;
                 break;
             case GameLogic.State.Defeat:
                 _defeatRoot.SetActive(true);
                 if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return)) {
                     _defeatRestartButton.OnPointerClick(new PointerEventData(_eventSystem));
                 }
+
+                _hintsGroup.alpha -= _hintsFadeSpeed * Time.deltaTime;
                 break;
         }
 

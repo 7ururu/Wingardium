@@ -232,7 +232,7 @@ public sealed class BrokenItem : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {
-        if (collider.transform == _goal) {
+        if (_state == State.Active && collider.transform == _goal) {
             _isGoalAchieved = true;
             _goalAchieveTime = Time.timeSinceLevelLoad;
 

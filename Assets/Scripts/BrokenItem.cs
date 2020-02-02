@@ -37,6 +37,10 @@ public sealed class BrokenItem : MonoBehaviour {
     private GameObject _enableOnActivationObject;
 
 
+    [SerializeField]
+    private ParticleSystem _activityIndicationParticles;
+
+
     private bool _isGoalAchieved;
     public bool IsGoalAchieved => _isGoalAchieved;
 
@@ -84,6 +88,7 @@ public sealed class BrokenItem : MonoBehaviour {
         _previewAnimationRoot.SetActive(false);
 
         var goalEmission = _goalParticlesInstance.emission;
+        var activityEmission = _activityIndicationParticles.emission;
 
         if (_enableOnActivationObject != null) {
             _enableOnActivationObject.SetActive(false);
@@ -93,6 +98,7 @@ public sealed class BrokenItem : MonoBehaviour {
             case State.Disabled:
                 gameObject.SetActive(true);
                 goalEmission.enabled = false;
+                activityEmission.enabled = false;
                 ResetTransform();
                 _rb.isKinematic = true;
                 break;
@@ -102,6 +108,7 @@ public sealed class BrokenItem : MonoBehaviour {
 
                 gameObject.SetActive(true);
                 goalEmission.enabled = true;
+                activityEmission.enabled = true;
                 ResetTransform();
                 _rb.isKinematic = false;
 
@@ -114,6 +121,7 @@ public sealed class BrokenItem : MonoBehaviour {
             case State.Replay:
                 gameObject.SetActive(true);
                 goalEmission.enabled = false;
+                activityEmission.enabled = false;
                 ResetTransform();
                 _rb.isKinematic = true;
                 break;
@@ -121,6 +129,7 @@ public sealed class BrokenItem : MonoBehaviour {
             case State.Preview:
                 gameObject.SetActive(true);
                 goalEmission.enabled = true;
+                activityEmission.enabled = true;
                 ResetTransform();
                 _rb.isKinematic = true;
 
@@ -133,6 +142,7 @@ public sealed class BrokenItem : MonoBehaviour {
             case State.OnPlace:
                 gameObject.SetActive(true);
                 goalEmission.enabled = false;
+                activityEmission.enabled = false;
                 transform.position = _goal.position;
                 transform.rotation = _goal.rotation;
                 _rb.isKinematic = true;
@@ -210,8 +220,11 @@ public sealed class BrokenItem : MonoBehaviour {
         _goalParticlesInstance = Instantiate(_goalParticlesPrefab);
         _goalParticlesInstance.transform.localPosition = _goal.position;
 
-        var emission = _goalParticlesInstance.emission;
-        emission.enabled = false;
+        var goalEmission = _goalParticlesInstance.emission;
+        goalEmission.enabled = false;
+        var activityEmission = _activityIndicationParticles.emission;
+        activityEmission.enabled = false;
+
 
         _previewAnimationRenderer.sprite = GetComponent<SpriteRenderer>().sprite;
         _previewAnimationRoot.transform.SetParent(null, true);

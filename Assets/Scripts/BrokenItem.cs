@@ -83,8 +83,10 @@ public sealed class BrokenItem : MonoBehaviour {
 
         switch (_state) {
             case State.Disabled:
-                gameObject.SetActive(false);
+                gameObject.SetActive(true);
                 goalEmission.enabled = false;
+                ResetTransform();
+                _rb.isKinematic = true;
                 break;
 
             case State.Active:

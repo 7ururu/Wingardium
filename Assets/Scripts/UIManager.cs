@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -46,6 +46,10 @@ public sealed class UIManager : MonoBehaviour {
     }
 
     private void Update() {
+	if (Input.GetKeyUp(KeyCode.Escape)) {
+		GameLogic.Instance.RestartGame();
+	}
+
         _victoryRoot.SetActive(false);
         _defeatRoot.SetActive(false);
         _timerRoot.SetActive(false);

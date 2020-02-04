@@ -3519,7 +3519,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 138.36, y: -50.920013}
+  m_AnchoredPosition: {x: 138.35938, y: -50.91992}
   m_SizeDelta: {x: 276.70996, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1286641199
@@ -4051,7 +4051,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -190.03, y: -159.1}
+  m_AnchoredPosition: {x: -190.03125, y: -159.09961}
   m_SizeDelta: {x: 380.07, y: 318.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1428829607
@@ -4937,7 +4937,7 @@ MonoBehaviour:
   - {fileID: 2083739965}
   _controller: {fileID: 1666230644}
   _gameCamera: {fileID: 519420030}
-  _gameTime: 90
+  _gameTime: 120
   _itemSwitchDelay: 1
   _victoryAnimationReplayInterval: 2.5
 --- !u!4 &1666230646

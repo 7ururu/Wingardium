@@ -8,6 +8,9 @@ public sealed class Controller : MonoBehaviour {
     [SerializeField]
     private float _force;
 
+    [SerializeField]
+    private Joystick _joystick;
+
 
     private Vector2 _resultForce;
 
@@ -35,6 +38,12 @@ public sealed class Controller : MonoBehaviour {
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
             _resultForce += new Vector2(_force, 0f);
         }
+
+        var direction = _joystick.Direction;
+        if (direction.y > 0f) {
+            direction.y *= 2f;
+        }
+        _resultForce += _force * direction;
     }
 
     private void FixedUpdate() {

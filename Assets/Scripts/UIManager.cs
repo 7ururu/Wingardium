@@ -40,15 +40,19 @@ public sealed class UIManager : MonoBehaviour {
     private float _hintsFadeSpeed = 10f;
 
 
+    [SerializeField]
+    private Joystick _joystick;
+
+
     private void Start() {
         _victoryRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
         _defeatRestartButton.onClick.AddListener(GameLogic.Instance.RestartGame);
     }
 
     private void Update() {
-	if (Input.GetKeyUp(KeyCode.Escape)) {
-		GameLogic.Instance.RestartGame();
-	}
+	    if (Input.GetKeyUp(KeyCode.Escape)) {
+		    GameLogic.Instance.RestartGame();
+	    }
 
         _victoryRoot.SetActive(false);
         _defeatRoot.SetActive(false);
@@ -58,7 +62,8 @@ public sealed class UIManager : MonoBehaviour {
             case GameLogic.State.Waiting:
                 _timerRoot.SetActive(true);
                 var isButtonPressed = Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
-                                      Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow);
+                                      Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) ||
+                                      _joystick.IsPressed;
                 if (isButtonPressed && GameLogic.Instance.StateSetTime + _waitingDelay < Time.timeSinceLevelLoad) {
                     GameLogic.Instance.SetState(GameLogic.State.Playing);
                 }
